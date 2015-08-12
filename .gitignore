@@ -49,3 +49,4 @@ Session.vim
 ## Manual
 /.envrc
 /templates/
+/Gemfile.lock
