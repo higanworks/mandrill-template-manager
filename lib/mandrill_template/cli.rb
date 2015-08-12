@@ -4,6 +4,7 @@ require 'mandrill_template/template'
 require 'formatador'
 require 'unicode' unless ['jruby'].include?(RbConfig::CONFIG['ruby_install_name'])
 require 'yaml'
+require "mandrill_template/monkey_create_file"
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
