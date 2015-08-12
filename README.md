@@ -1,4 +1,4 @@
-# Mandrill Template Manager()CLI
+# Mandrill Template Manager(CLI)
 
 Manage [Mandrill Templates](https://mandrillapp.com/api/docs/templates.ruby.html) by CLI.
 
