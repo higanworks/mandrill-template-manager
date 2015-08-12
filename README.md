@@ -22,6 +22,37 @@ Commands:
 4. publish it.
 
 
+## Template local files
+
+Templates are stored into `templates/` directory.
+
+```
+templates/
+├── ${template_name1}
+│   ├── code         # code contents
+│   ├── metadata.yml # metadata of template
+│   └── text         # text contents
+├── ${template_name2}
+│   ├── code
+│   ├── metadata.yml
+│   └── text
+└── ${template_name3}
+    ├── code
+    ├── metadata.yml
+    └── text
+```
+
+example of metadata.yml
+
+```
+---
+slug: mission
+labels: []
+subject: "Today's your mission"
+from_email: test@example.com
+from_name: Boss
+```
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
