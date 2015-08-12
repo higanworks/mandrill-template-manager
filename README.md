@@ -2,8 +2,16 @@
 
 Manage [Mandrill Templates](https://mandrillapp.com/api/docs/templates.ruby.html) by CLI.
 
+## Install
+
+Add Gemfile and bundle.
+
 ```
-$ ./bin/mandrilltemplate 
+gem 'mandrill-template-manager'
+```
+
+```
+$ ./bin/mandrilltemplate
 Commands:
   mandrilltemplate delete NAME     # delete template from remote.
   mandrilltemplate export NAME     # export template from remote to local files.
@@ -20,6 +28,36 @@ Commands:
 2. modify and manage under version controle system.
 3. upload template.
 4. publish it.
+
+
+## Setup
+
+APIKEY is read from environment variable.
+
+```
+export MANDRILL_APIKEY='your api key'
+```
+
+Next, check by list subcommand.
+
+```
+$ mandrilltemplate list
+
+Remote Templates
+----------------------
+  +----------+----------+----------+--------------+---------------------+---------------------+--------+---------------+-----------------+------------------+--------------------+-----------+-------------------+
+  | has_diff | name     | slug     | publish_name | draft_updated_at    | published_at        | labels | subject       | publish_subject | from_email       | publish_from_email | from_name | publish_from_name |
+  +----------+----------+----------+--------------+---------------------+---------------------+--------+---------------+-----------------+------------------+--------------------+-----------+-------------------+
+  ... remote templates ...
+
+Local Templates
+----------------------
+  +----------+----------+------------------+-----------+--------------------+------------------------+
+  | name     | slug     | from_email       | from_name | subject            | labels                 |
+  +----------+----------+------------------+-----------+--------------------+------------------------+
+  ... local templates ...
+
+```
 
 
 ## Template local files
