@@ -9,7 +9,7 @@ class MandrillTemplateManager < Thor
   include Thor::Actions
   VERSION = "0.1.0"
 
-  desc "export NAME", "export template from remote."
+  desc "export NAME", "export template from remote to local files."
   def export(name)
     template = MandrillClient.client.templates.info(name)
     meta, code, text  = build_template_for_export(template)
