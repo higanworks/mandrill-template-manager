@@ -8,6 +8,10 @@ Add Gemfile and bundle.
 
 ```
 gem 'mandrill-template-manager'
+
+## Recommend for using multibyte language.
+gem 'formatador', github: 'geemus/formatador'
+gem 'unicode'
 ```
 
 ```
