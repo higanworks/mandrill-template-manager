@@ -8,7 +8,7 @@ require "mandrill_template/monkey_create_file"
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
-  VERSION = "0.1.0"
+  VERSION = "0.1.1"
 
   desc "export NAME", "export template from remote to local files."
   def export(name)
