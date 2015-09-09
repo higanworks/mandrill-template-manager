@@ -5,10 +5,11 @@ require 'formatador'
 require 'unicode' unless ['jruby'].include?(RbConfig::CONFIG['ruby_install_name'])
 require 'yaml'
 require "mandrill_template/monkey_create_file"
+autoload "Handlebars", 'handlebars'
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
-  VERSION = "0.1.1"
+  VERSION = "0.2.0"
 
   desc "export NAME", "export template from remote to local files."
   def export(name)
@@ -48,6 +49,25 @@ class MandrillTemplateManager < Thor
   desc "publish NAME", "publish template from draft."
   def publish(name)
     puts MandrillClient.client.templates.publish(name).to_yaml
+  end
+
+  desc "render NAME [PARAMS_FILE]", "render mailbody from local template data. File should be Array. see https://mandrillapp.com/api/docs/templates.JSON.html#method=render."
+  option :handlebars, type: :boolean, default: false
+  def render(name, params = nil)
+    merge_vars =  params ? JSON.parse(File.read(params)) : []
+    template = MandrillTemplate::Local.new(name)
+    if template.avail
+      if options[:handlebars]
+        handlebars = Handlebars::Context.new
+        h_template = handlebars.compile(template['code'])
+        puts h_template.call(localize_merge_vars(merge_vars))
+      else
+        result = MandrillClient.client.templates.render template.name, template['code'], merge_vars
+        puts result["html"]
+      end
+    else
+      puts "Template data not found #{name}. Please generate first."
+    end
   end
 
   desc "list", "show template list both of remote and local."
@@ -161,5 +181,11 @@ class MandrillTemplateManager < Thor
     rescue Mandrill::UnknownTemplateError
       false
     end
+  end
+
+  def localize_merge_vars(merge_vars)
+    h = {}
+    merge_vars.each {|kv| h[kv["name"]] = kv["content"] }
+    h
   end
 end
