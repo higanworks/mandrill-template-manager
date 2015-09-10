@@ -9,7 +9,7 @@ autoload "Handlebars", 'handlebars'
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
 
   desc "export NAME", "export template from remote to local files."
   def export(name)
@@ -62,7 +62,9 @@ class MandrillTemplateManager < Thor
         h_template = handlebars.compile(template['code'])
         puts h_template.call(localize_merge_vars(merge_vars))
       else
-        result = MandrillClient.client.templates.render template.name, template['code'], merge_vars
+        result = MandrillClient.client.templates.render template.name,
+          [{"content"=>template["code"], "name"=>template.name}],
+          merge_vars
         puts result["html"]
       end
     else
