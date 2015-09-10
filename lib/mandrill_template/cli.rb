@@ -9,7 +9,7 @@ autoload "Handlebars", 'handlebars'
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
-  VERSION = "0.2.0"
+  VERSION = "0.2.1"
 
   desc "export NAME", "export template from remote to local files."
   def export(name)
@@ -71,6 +71,7 @@ class MandrillTemplateManager < Thor
   end
 
   desc "list", "show template list both of remote and local."
+  option :verbose, type: :boolean, default: false, aliases: :v
   def list
     puts "Remote Templates"
     puts "----------------------"
@@ -80,6 +81,7 @@ class MandrillTemplateManager < Thor
       template
     end
 
+    if options[:verbose]
     Formatador.display_compact_table(
       remote_templates,
       ["has_diff",
@@ -96,6 +98,19 @@ class MandrillTemplateManager < Thor
        "from_name",
        "publish_from_name"]
     )
+    else
+      Formatador.display_compact_table(
+        remote_templates,
+        ["has_diff",
+         "name",
+         "slug",
+         "from_email",
+         "from_name",
+         "subject",
+         "labels",
+         "from_name"]
+      )
+    end
 
     puts "Local Templates"
     puts "----------------------"
