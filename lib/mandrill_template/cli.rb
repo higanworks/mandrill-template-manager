@@ -19,64 +19,64 @@ class MandrillTemplateManager < Thor
     end
   end
 
-  desc "export NAME", "export template from remote to local files."
-  def export(name)
-    template = MandrillClient.client.templates.info(name)
+  desc "export SLUG", "export template from remote to local files."
+  def export(slug)
+    template = MandrillClient.client.templates.info(slug)
     meta, code, text  = build_template_for_export(template)
-    save_as_local_template(name, meta, code, text)
+    save_as_local_template(meta, code, text)
   end
 
-  desc "upload NAME", "upload template to remote as draft."
-  def upload(name)
-    template = MandrillTemplate::Local.new(name)
+  desc "upload SLUG", "upload template to remote as draft."
+  def upload(slug)
+    template = MandrillTemplate::Local.new(slug)
     if template.avail
       upload_template(template)
     else
-      puts "Template data not found #{name}. Please generate first."
+      puts "Template data not found #{slug}. Please generate first."
     end
   end
 
-  desc "delete NAME", "delete template from remote."
-  def delete(name)
+  desc "delete SLUG", "delete template from remote."
+  def delete(slug)
     begin
-      result = MandrillClient.client.templates.delete(name)
+      result = MandrillClient.client.templates.delete(slug)
       puts result.to_yaml
     rescue Mandrill::UnknownTemplateError => e
       puts e.message
     end
   end
 
-  desc "generate NAME", "generate new template files."
-  def generate(name)
-    new_template = MandrillTemplate::Local.new(name)
+  desc "generate SLUG", "generate new template files."
+  def generate(slug)
+    new_template = MandrillTemplate::Local.new(slug)
     puts new_template.class
     meta, code, text = build_template_for_export(new_template)
-    save_as_local_template(name, meta, code, text)
+    save_as_local_template(meta, code, text)
   end
 
-  desc "publish NAME", "publish template from draft."
-  def publish(name)
-    puts MandrillClient.client.templates.publish(name).to_yaml
+  desc "publish SLUG", "publish template from draft."
+  def publish(slug)
+    puts MandrillClient.client.templates.publish(slug).to_yaml
   end
 
-  desc "render NAME [PARAMS_FILE]", "render mailbody from local template data. File should be Array. see https://mandrillapp.com/api/docs/templates.JSON.html#method=render."
+  desc "render SLUG [PARAMS_FILE]", "render mailbody from local template data. File should be Array. see https://mandrillapp.com/api/docs/templates.JSON.html#method=render."
   option :handlebars, type: :boolean, default: false
-  def render(name, params = nil)
+  def render(slug, params = nil)
     merge_vars =  params ? JSON.parse(File.read(params)) : []
-    template = MandrillTemplate::Local.new(name)
+    template = MandrillTemplate::Local.new(slug)
     if template.avail
       if options[:handlebars]
         handlebars = Handlebars::Context.new
         h_template = handlebars.compile(template['code'])
         puts h_template.call(localize_merge_vars(merge_vars))
       else
-        result = MandrillClient.client.templates.render template.name,
-          [{"content"=>template["code"], "name"=>template.name}],
+        result = MandrillClient.client.templates.render template.slug,
+          [{"content"=>template["code"], "name"=>template.slug}],
           merge_vars
         puts result["html"]
       end
     else
-      puts "Template data not found #{name}. Please generate first."
+      puts "Template data not found #{slug}. Please generate first."
     end
   end
 
@@ -150,6 +150,7 @@ class MandrillTemplateManager < Thor
   def build_template_for_export(t)
     [
       {
+        "name"       => t['name'],
         "slug"       => t['slug'],
         "labels"     => t['labels'],
         "subject"    => t['subject'],
@@ -165,11 +166,12 @@ class MandrillTemplateManager < Thor
     MandrillClient.templates_directory
   end
 
-  def save_as_local_template(name, meta, code, text)
-    empty_directory File.join(templates_directory, name)
-    create_file File.join(templates_directory, name, "metadata.yml"), meta.to_yaml
-    create_file File.join(templates_directory, name, "code"), code
-    create_file File.join(templates_directory, name, "text"), text
+  def save_as_local_template(meta, code, text)
+    dir_name = meta['slug']
+    empty_directory File.join(templates_directory, dir_name)
+    create_file File.join(templates_directory, dir_name, "metadata.yml"), meta.to_yaml
+    create_file File.join(templates_directory, dir_name, "code"), code
+    create_file File.join(templates_directory, dir_name, "text"), text
   end
 
   def collect_local_templates
@@ -186,12 +188,12 @@ class MandrillTemplateManager < Thor
   end
 
   def upload_template(t)
-    if remote_template_exists?(t.name)
+    if remote_template_exists?(t.slug)
       method = :update
     else
       method = :add
     end
-    result = MandrillClient.client.templates.send(method, t.name,
+    result = MandrillClient.client.templates.send(method, t.slug,
       t['from_email'],
       t['from_name'],
       t['subject'],
@@ -203,9 +205,9 @@ class MandrillTemplateManager < Thor
     puts result.to_yaml
   end
 
-  def remote_template_exists?(name)
+  def remote_template_exists?(slug)
     begin
-      MandrillClient.client.templates.info(name)
+      MandrillClient.client.templates.info(slug)
       true
     rescue Mandrill::UnknownTemplateError
       false

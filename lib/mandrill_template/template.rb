@@ -3,14 +3,14 @@ require 'yaml'
 
 module MandrillTemplate
   class Local < Hash
-    attr_reader :name, :avail
+    attr_reader :slug, :avail
 
-    def initialize(name)
-      @name       = name
-      meta, code, text = load_data(name)
+    def initialize(slug)
+      @slug = slug
+      meta, code, text = load_data(slug)
 
-      self['name']       = name
-      self['slug']       = meta['slug']       ||= name
+      self['name']       = meta['name']       ||= slug
+      self['slug']       = meta['slug']       ||= slug
       self['from_email'] = meta['from_email'] ||= nil
       self['from_name']  = meta['from_name']  ||= nil
       self['subject']    = meta['subject']    ||= nil
@@ -24,13 +24,13 @@ module MandrillTemplate
       MandrillClient.templates_directory
     end
 
-    def load_data(name)
-      if Dir.exists?(File.join(templates_directory, name))
+    def load_data(slug)
+      if Dir.exists?(File.join(templates_directory, slug))
         @avail = true
-        code = File.read(File.join(templates_directory, name, "code"))
-        text = File.read(File.join(templates_directory, name, "text"))
+        code = File.read(File.join(templates_directory, slug, "code"))
+        text = File.read(File.join(templates_directory, slug, "text"))
         [
-          YAML.load_file(File.join(templates_directory, name, "metadata.yml")),
+          YAML.load_file(File.join(templates_directory, slug, "metadata.yml")),
           code.empty? ? nil : code,
           text.empty? ? nil : text
         ]
