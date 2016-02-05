@@ -80,12 +80,12 @@ class MandrillTemplateManager < Thor
     end
   end
 
-  desc "list", "show template list both of remote and local."
+  desc "list [LABEL]", "show template list both of remote and local [optionally filtered by LABEL]."
   option :verbose, type: :boolean, default: false, aliases: :v
-  def list
+  def list(label = nil)
     puts "Remote Templates"
     puts "----------------------"
-    remote_templates = MandrillClient.client.templates.list
+    remote_templates = MandrillClient.client.templates.list(label)
     remote_templates.map! do |template|
       template["has_diff"] = has_diff_between_draft_and_published?(template)
       template
@@ -125,7 +125,7 @@ class MandrillTemplateManager < Thor
     puts "Local Templates"
     puts "----------------------"
     Formatador.display_compact_table(
-      collect_local_templates,
+      collect_local_templates(label),
       [
         "name",
         "slug",
@@ -174,12 +174,15 @@ class MandrillTemplateManager < Thor
     create_file File.join(templates_directory, dir_name, "text.txt"), text
   end
 
-  def collect_local_templates
+  def collect_local_templates(label = nil)
     local_templates = []
     dirs = Dir.glob("#{ templates_directory }/*").map {|path| path.split(File::SEPARATOR).last}
     dirs.map do |dir|
       begin
-      local_templates << MandrillTemplate::Local.new(dir)
+        template = MandrillTemplate::Local.new(dir)
+        if label.nil? || template['labels'].include?(label)
+          local_templates << template
+        end
       rescue
         next
       end
