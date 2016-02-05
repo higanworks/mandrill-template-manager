@@ -153,16 +153,20 @@ class MandrillTemplateManager < Thor
     ]
   end
 
+  def templates_directory
+    MandrillClient.templates_directory
+  end
+
   def save_as_local_template(name, meta, code, text)
-    empty_directory File.join("templates", name)
-    create_file File.join("templates", name, "metadata.yml"), meta.to_yaml
-    create_file File.join("templates", name, "code"), code
-    create_file File.join("templates", name, "text"), text
+    empty_directory File.join(templates_directory, name)
+    create_file File.join(templates_directory, name, "metadata.yml"), meta.to_yaml
+    create_file File.join(templates_directory, name, "code"), code
+    create_file File.join(templates_directory, name, "text"), text
   end
 
   def collect_local_templates
     local_templates = []
-    dirs = Dir.glob("templates/*").map {|path| path.split(File::SEPARATOR).last}
+    dirs = Dir.glob("#{ templates_directory }/*").map {|path| path.split(File::SEPARATOR).last}
     dirs.map do |dir|
       begin
       local_templates << MandrillTemplate::Local.new(dir)

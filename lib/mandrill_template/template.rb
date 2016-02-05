@@ -20,13 +20,17 @@ module MandrillTemplate
       self['text']       = text               ||= nil
     end
 
+    def templates_directory
+      MandrillClient.templates_directory
+    end
+
     def load_data(name)
-      if Dir.exists?(File.join("templates", name))
+      if Dir.exists?(File.join(templates_directory, name))
         @avail = true
-        code = File.read(File.join("templates", name, "code"))
-        text = File.read(File.join("templates", name, "text"))
+        code = File.read(File.join(templates_directory, name, "code"))
+        text = File.read(File.join(templates_directory, name, "text"))
         [
-          YAML.load_file(File.join("templates", name, "metadata.yml")),
+          YAML.load_file(File.join(templates_directory, name, "metadata.yml")),
           code.empty? ? nil : code,
           text.empty? ? nil : text
         ]
