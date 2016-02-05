@@ -170,8 +170,8 @@ class MandrillTemplateManager < Thor
     dir_name = meta['slug']
     empty_directory File.join(templates_directory, dir_name)
     create_file File.join(templates_directory, dir_name, "metadata.yml"), meta.to_yaml
-    create_file File.join(templates_directory, dir_name, "code"), code
-    create_file File.join(templates_directory, dir_name, "text"), text
+    create_file File.join(templates_directory, dir_name, "code.html"), code
+    create_file File.join(templates_directory, dir_name, "text.txt"), text
   end
 
   def collect_local_templates
