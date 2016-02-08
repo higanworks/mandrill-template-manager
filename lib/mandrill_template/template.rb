@@ -1,16 +1,17 @@
 require 'mandrill'
 require 'yaml'
+require 'fileutils'
 
 module MandrillTemplate
   class Local < Hash
-    attr_reader :name, :avail
+    attr_reader :slug, :avail
 
-    def initialize(name)
-      @name       = name
-      meta, code, text = load_data(name)
+    def initialize(slug)
+      @slug = slug
+      meta, code, text = load_data(slug)
 
-      self['name']       = name
-      self['slug']       = meta['slug']       ||= name
+      self['name']       = meta['name']       ||= slug
+      self['slug']       = meta['slug']       ||= slug
       self['from_email'] = meta['from_email'] ||= nil
       self['from_name']  = meta['from_name']  ||= nil
       self['subject']    = meta['subject']    ||= nil
@@ -20,18 +21,30 @@ module MandrillTemplate
       self['text']       = text               ||= nil
     end
 
-    def load_data(name)
-      if Dir.exists?(File.join("templates", name))
+    def templates_directory
+      MandrillClient.templates_directory
+    end
+
+    def load_data(slug)
+      if Dir.exists?(File.join(templates_directory, slug))
         @avail = true
-        code = File.read(File.join("templates", name, "code"))
-        text = File.read(File.join("templates", name, "text"))
+        code = File.read(File.join(templates_directory, slug, "code.html"))
+        text = File.read(File.join(templates_directory, slug, "text.txt"))
         [
-          YAML.load_file(File.join("templates", name, "metadata.yml")),
+          YAML.load_file(File.join(templates_directory, slug, "metadata.yml")),
           code.empty? ? nil : code,
           text.empty? ? nil : text
         ]
       else
         [{}, nil, nil]
+      end
+    end
+
+    def delete!
+      dir_name = File.join(templates_directory, slug)
+      puts dir_name
+      if Dir.exists?(dir_name)
+        FileUtils.rm_rf(dir_name)
       end
     end
   end
