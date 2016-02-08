@@ -21,14 +21,15 @@ $ bundle install
 ```
 $ bundle exec mandrilltemplate
 Commands:
-  mandrilltemplate delete NAME                # delete template from remote.
-  mandrilltemplate export NAME                # export template from remote to local files.
-  mandrilltemplate generate NAME              # generate new template files.
+  mandrilltemplate delete SLUG                # delete template from remote.
+  mandrilltemplate export SLUG                # export template from remote to local files.
+  mandrilltemplate export_all                 # export all templates from remote to local files.
+  mandrilltemplate generate SLUG              # generate new template files.
   mandrilltemplate help [COMMAND]             # Describe available commands or one specific command
   mandrilltemplate list                       # show template list both of remote and local.
-  mandrilltemplate publish NAME               # publish template from draft.
-  mandrilltemplate render NAME [PARAMS_FILE]  # render mailbody from local template data. File should be Array. see https://mandrillapp.com/api/docs/templates.JSON.html#method=render.
-  mandrilltemplate upload NAME                # upload template to remote as draft.
+  mandrilltemplate publish SLUG               # publish template from draft.
+  mandrilltemplate render SLUG [PARAMS_FILE]  # render mailbody from local template data. File should be Array. see https://mandrillapp.com/api/docs/templates.JSON.html#method=render.
+  mandrilltemplate upload SLUG                # upload template to remote as draft.
 
 ```
 
@@ -48,7 +49,8 @@ APIKEY is read from environment variable.
 export MANDRILL_APIKEY='your api key'
 ```
 
-Next, check by list subcommand.
+
+## List templates
 
 ```
 $ mandrilltemplate list
@@ -69,25 +71,84 @@ Local Templates
 
 ```
 
+you can also specify a label to filter this list:
+
+```
+$ mandrilltemplate list LABEL
+```
+
+
+## Downloading templates from Mandrill
+
+```
+$ mandrilltemplate export SLUG
+```
+
+or
+
+```
+$ mandrilltemplate export_all
+```
+
+
+
+## Uploading and publishing templates
+
+```
+$ mandrilltemplate upload SLUG
+```
+
+```
+$ mandrilltemplate publish SLUG
+```
+
+or, both at once:
+
+```
+$ mandrilltemplate upload SLUG --publish
+```
+
+
+## Deleting templates
+
+```
+$ mandrilltemplate delete SLUG
+```
+
+will delete from server only.
+
+```
+$ mandrilltemplate upload SLUG --delete_local
+```
+
+will also delete local files.
+
+
 
 ## Template local files
 
-Templates are stored into `templates/` directory.
+Templates are stored by defualt into `templates/` directory.
+
+You can control this by setting the MANDRILL_TEMPLATES_DIR environment variable.
+
+```
+export MANDRILL_TEMPLATES_DIR=mandrill_templates
+```
 
 ```
 templates/
-├── ${template_name1}
-│   ├── code         # code contents
+├── ${template_slug1}
+│   ├── code.html    # code contents
 │   ├── metadata.yml # metadata of template
-│   └── text         # text contents
-├── ${template_name2}
-│   ├── code
+│   └── text.txt     # text contents
+├── ${template_slug2}
+│   ├── code.html
 │   ├── metadata.yml
-│   └── text
-└── ${template_name3}
-    ├── code
+│   └── text.txt
+└── ${template_slug3}
+    ├── code.html
     ├── metadata.yml
-    └── text
+    └── text.txt
 ```
 
 example of metadata.yml
@@ -118,7 +179,7 @@ It will be compiled as Handlebars Template.
 
 ```
 Usage:
-  mandrilltemplate render NAME [PARAMS_FILE]
+  mandrilltemplate render SLUG [PARAMS_FILE]
 
 Options:
   [--handlebars], [--no-handlebars]
