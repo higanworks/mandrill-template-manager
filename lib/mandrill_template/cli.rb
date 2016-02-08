@@ -9,7 +9,7 @@ autoload "Handlebars", 'handlebars'
 
 class MandrillTemplateManager < Thor
   include Thor::Actions
-  VERSION = "0.2.2"
+  VERSION = "0.3.0"
 
   desc "export_all", "export all templates from remote to local files."
   def export_all
