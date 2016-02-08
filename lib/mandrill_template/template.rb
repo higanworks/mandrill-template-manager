@@ -1,5 +1,6 @@
 require 'mandrill'
 require 'yaml'
+require 'fileutils'
 
 module MandrillTemplate
   class Local < Hash
@@ -36,6 +37,14 @@ module MandrillTemplate
         ]
       else
         [{}, nil, nil]
+      end
+    end
+
+    def delete!
+      dir_name = File.join(templates_directory, slug)
+      puts dir_name
+      if Dir.exists?(dir_name)
+        FileUtils.rm_rf(dir_name)
       end
     end
   end

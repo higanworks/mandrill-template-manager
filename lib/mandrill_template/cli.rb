@@ -39,6 +39,7 @@ class MandrillTemplateManager < Thor
   end
 
   desc "delete SLUG", "delete template from remote."
+  option :delete_local, type: :boolean, default: false
   def delete(slug)
     begin
       result = MandrillClient.client.templates.delete(slug)
@@ -46,6 +47,7 @@ class MandrillTemplateManager < Thor
     rescue Mandrill::UnknownTemplateError => e
       puts e.message
     end
+    delete_local_template(slug) if options[:delete_local]
   end
 
   desc "generate SLUG", "generate new template files."
@@ -190,6 +192,15 @@ class MandrillTemplateManager < Thor
       end
     end
     local_templates
+  end
+
+  def delete_local_template(slug)
+    template = MandrillTemplate::Local.new(slug)
+    if template.avail
+      template.delete!
+    else
+      puts "Local template data not found #{slug}."
+    end
   end
 
   def upload_template(t)
