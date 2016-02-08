@@ -27,10 +27,12 @@ class MandrillTemplateManager < Thor
   end
 
   desc "upload SLUG", "upload template to remote as draft."
+  option :publish, type: :boolean, default: false, aliases: :p
   def upload(slug)
     template = MandrillTemplate::Local.new(slug)
     if template.avail
       upload_template(template)
+      publish(slug) if options[:publish]
     else
       puts "Template data not found #{slug}. Please generate first."
     end
