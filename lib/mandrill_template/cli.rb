@@ -37,7 +37,22 @@ class MandrillTemplateManager < Thor
       puts "Template data not found #{slug}. Please generate first."
     end
   end
-
+  
+ desc "upload ALL", "upload all template to remote as draft."
+  option :publish, type: :boolean, default: false, aliases: :p
+  def upload_all()
+    labels = Dir.glob("#{ templates_directory }/*").map {|path| path.split(File::SEPARATOR).last}
+    labels.each do |label|
+      template = MandrillTemplate::Local.new(label)
+      if template.avail
+        upload_template(template)
+        publish(slug) if options[:publish]
+        puts "Template published #{label}. feeling good."
+      else
+        puts "Template data not found #{label}. Please generate first."
+      end
+    end 
+  end
   desc "delete SLUG", "delete template from remote."
   option :delete_local, type: :boolean, default: false
   def delete(slug)
