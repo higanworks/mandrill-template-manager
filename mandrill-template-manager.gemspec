@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "mandrill-template-manager"
-  spec.version       = "0.3.0"
+  spec.version       = "0.3.1"
   spec.authors       = ["sawanoboly"]
   spec.email         = ["sawanoboriyu@higanworks.com"]
 
