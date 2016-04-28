@@ -46,7 +46,7 @@ class MandrillTemplateManager < Thor
       template = MandrillTemplate::Local.new(label)
       if template.avail
         upload_template(template)
-        publish(slug) if options[:publish]
+        publish(label) if options[:publish]
         puts "Template published #{label}. feeling good."
       else
         puts "Template data not found #{label}. Please generate first."
