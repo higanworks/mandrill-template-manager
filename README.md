@@ -44,12 +44,17 @@ Commands:
 
 ## Setup
 
-APIKEY is read from environment variable.
+Usage of the `mandrilltemplate` command requires a Mandrill API key. You can set it in a `.env` file:
+
+```
+MANDRILL_APIKEY='your api key'
+```
+
+or set it as an environment variable:
 
 ```
 export MANDRILL_APIKEY='your api key'
 ```
-
 
 ## List templates
 

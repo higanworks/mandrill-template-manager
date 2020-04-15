@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), %w[.. lib])
 
+require 'dotenv/load'
 require "thor"
 require "mandrill_template/cli"
 require "mandrill_template/monkey_create_file"
